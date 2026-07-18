@@ -1,0 +1,53 @@
+name: Bug report
+description: Something is broken
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the report! A minimal reproduction gets bugs fixed fastest.
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, plus what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: A snippet, Expo Snack, or repo link that reproduces the issue.
+      placeholder: |
+        <FastImage source={{ uri: '...' }} style={{ width: '100%' }} autoHeight />
+    validations:
+      required: true
+  - type: input
+    id: library-version
+    attributes:
+      label: react-native-fast-image-auto-height version
+    validations:
+      required: true
+  - type: input
+    id: engine-version
+    attributes:
+      label: '@d11/react-native-fast-image version'
+    validations:
+      required: true
+  - type: input
+    id: rn-version
+    attributes:
+      label: React Native version (and architecture)
+      placeholder: 0.86.0, New Architecture
+    validations:
+      required: true
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      multiple: true
+      options:
+        - Android
+        - iOS
+    validations:
+      required: true

@@ -1,0 +1,22 @@
+{
+  "name": "react-native-fast-image-auto-height-example",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "react-native start",
+    "android": "react-native run-android",
+    "ios": "react-native run-ios"
+  },
+  "dependencies": {
+    "@d11/react-native-fast-image": "^8.13.0",
+    "react": "19.2.3",
+    "react-native": "^0.86.0"
+  },
+  "devDependencies": {
+    "@react-native-community/cli": "latest",
+    "@react-native/babel-preset": "0.86.0",
+    "@react-native/metro-config": "0.86.0",
+    "@types/react": "^19.0.0",
+    "typescript": "^5.9.0"
+  }
+}

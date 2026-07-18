@@ -1,0 +1,137 @@
+{
+  "name": "react-native-fast-image-auto-height",
+  "version": "1.0.0",
+  "description": "The definitive FastImage successor for React Native: FastImage performance and API compatibility plus automatic height/width calculation, aspect-ratio caching, promise deduplication, retries, placeholders and fade transitions. New Architecture (Fabric + TurboModules) ready.",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
+  "types": "lib/typescript/commonjs/src/index.d.ts",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
+  "exports": {
+    ".": {
+      "source": "./src/index.ts",
+      "import": {
+        "types": "./lib/typescript/module/src/index.d.ts",
+        "default": "./lib/module/index.js"
+      },
+      "require": {
+        "types": "./lib/typescript/commonjs/src/index.d.ts",
+        "default": "./lib/commonjs/index.js"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src",
+    "lib",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"src/**/*.{ts,tsx}\"",
+    "test": "jest",
+    "clean": "rm -rf lib",
+    "prepare": "bob build",
+    "release": "npm run clean && npm run typecheck && npm run lint && npm run test && bob build"
+  },
+  "keywords": [
+    "react-native",
+    "fast-image",
+    "fastimage",
+    "react-native-fast-image",
+    "auto-height",
+    "auto-width",
+    "autoheight",
+    "aspect-ratio",
+    "image",
+    "image-size",
+    "image-dimensions",
+    "responsive-image",
+    "image-cache",
+    "glide",
+    "sdwebimage",
+    "fabric",
+    "turbomodules",
+    "new-architecture",
+    "flashlist",
+    "flatlist",
+    "pinterest",
+    "masonry",
+    "placeholder",
+    "lazy-loading",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chiragramani/react-native-fast-image-auto-height.git"
+  },
+  "author": "Chirag Ramani",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/chiragramani/react-native-fast-image-auto-height/issues"
+  },
+  "homepage": "https://github.com/chiragramani/react-native-fast-image-auto-height#readme",
+  "peerDependencies": {
+    "@d11/react-native-fast-image": ">=8.7.0",
+    "react": "*",
+    "react-native": "*"
+  },
+  "sideEffects": false,
+  "jest": {
+    "preset": "react-native",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/lib/",
+      "<rootDir>/example/"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.js"
+    ]
+  },
+  "react-native-builder-bob": {
+    "source": "src",
+    "output": "lib",
+    "targets": [
+      [
+        "commonjs",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "module",
+        {
+          "esm": true
+        }
+      ],
+      [
+        "typescript",
+        {
+          "project": "tsconfig.build.json"
+        }
+      ]
+    ]
+  },
+  "devDependencies": {
+    "@d11/react-native-fast-image": "^8.13.0",
+    "@eslint/js": "^10.0.1",
+    "@react-native/babel-preset": "^0.86.0",
+    "@react-native/jest-preset": "^0.86.0",
+    "@testing-library/react-native": "^14.0.1",
+    "@types/jest": "^29.5.14",
+    "@types/react": "^19.2.17",
+    "eslint": "^10.7.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "jest": "^29.7.0",
+    "react": "^19.2.3",
+    "react-native": "^0.86.0",
+    "react-native-builder-bob": "^0.43.0",
+    "react-test-renderer": "^19.2.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.64.0"
+  }
+}

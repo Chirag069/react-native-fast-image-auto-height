@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "paths": {
+      "react-native-fast-image-auto-height": ["../src/index.ts"]
+    }
+  },
+  "include": ["src", "App.tsx"],
+  "exclude": ["node_modules"]
+}

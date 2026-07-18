@@ -1,0 +1,24 @@
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build output
+lib/
+
+# Editors
+.idea/
+.vscode/
+*.swp
+
+# macOS
+.DS_Store
+
+# Coverage
+coverage/
+
+# Example app
+example/node_modules/
+example/ios/Pods/
+example/android/.gradle/
+example/android/build/
