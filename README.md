@@ -8,8 +8,8 @@
 
 - ✅ **Drop-in FastImage replacement** — migration is one import line
 - ✅ **Auto height / auto width** from the image's intrinsic aspect ratio
-- ✅ **FastImage performance** — Glide (Android) / SDWebImage (iOS) via [`@d11/react-native-fast-image`](https://github.com/dream11/react-native-fast-image)
-- ✅ **New Architecture ready** — Fabric + TurboModules
+- ✅ **FastImage performance** — Glide (Android) / SDWebImage (iOS) via [`react-native-fast-image`](https://github.com/DylanVann/react-native-fast-image)
+- ✅ **New Architecture ready** — Fabric + TurboModules (subject to engine support)
 - ✅ **In-memory aspect-ratio cache** with LRU eviction — a URL is measured once per session
 - ✅ **Promise deduplication** — 100 cells asking for the same image trigger exactly one size probe
 - ✅ **Retries, placeholders, fade transitions, lazy loading**
@@ -20,32 +20,30 @@
 
 No other library provides all of this at once:
 
-| Capability | `react-native-fast-image` | `@d11/react-native-fast-image` | `react-native-auto-height-image` | **this package** |
-| --- | :-: | :-: | :-: | :-: |
-| Native caching (Glide / SDWebImage) | ✅ | ✅ | ❌ (RN `Image`) | ✅ |
-| Actively maintained | ❌ | ✅ | ⚠️ | ✅ |
-| Fabric / TurboModules | ❌ | ✅ | ❌ | ✅ |
-| Automatic height | ❌ | ❌ | ✅ | ✅ |
-| Automatic width | ❌ | ❌ | ❌ | ✅ |
-| Aspect-ratio caching + dedup | ❌ | ❌ | ⚠️ | ✅ |
-| Retries / placeholder / transition / lazy | ❌ | ⚠️ | ❌ | ✅ |
-| Strict TypeScript, typed public API | ⚠️ | ⚠️ | ⚠️ | ✅ |
+| Capability | `react-native-fast-image` | `react-native-auto-height-image` | **this package** |
+| --- | :-: | :-: | :-: |
+| Native caching (Glide / SDWebImage) | ✅ | ❌ (RN `Image`) | ✅ |
+| Automatic height | ❌ | ✅ | ✅ |
+| Automatic width | ❌ | ❌ | ✅ |
+| Aspect-ratio caching + dedup | ❌ | ⚠️ | ✅ |
+| Retries / placeholder / transition / lazy | ❌ | ❌ | ✅ |
+| Strict TypeScript, typed public API | ⚠️ | ⚠️ | ✅ |
 
 ## Installation
 
 ```sh
-npm install react-native-fast-image-auto-height @d11/react-native-fast-image
+npm install react-native-fast-image-auto-height react-native-fast-image
 # or
-yarn add react-native-fast-image-auto-height @d11/react-native-fast-image
+yarn add react-native-fast-image-auto-height react-native-fast-image
 ```
 
-`@d11/react-native-fast-image` (>= 8.7.0) is a peer dependency — it is the battle-tested native engine; this library is the intelligence layer on top. Then:
+`react-native-fast-image` (>= 8.6.0) is a peer dependency — it is the native engine; this library is the intelligence layer on top. Then:
 
 ```sh
 cd ios && pod install
 ```
 
-Requires React Native >= 0.71. Works on the New Architecture and the legacy renderer.
+Requires React Native >= 0.71. Works on the New Architecture and the legacy renderer (subject to engine support).
 
 ## Migration from FastImage
 
@@ -53,7 +51,6 @@ Change the import. Done.
 
 ```diff
 - import FastImage from 'react-native-fast-image';
-- import FastImage from '@d11/react-native-fast-image';
 + import FastImage from 'react-native-fast-image-auto-height';
 ```
 

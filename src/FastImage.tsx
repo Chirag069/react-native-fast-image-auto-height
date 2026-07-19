@@ -248,7 +248,7 @@ interface FastImageStatics {
   priority: typeof priority;
   /** FastImage-compatible enum: `immutable | web | cacheOnly`. */
   cacheControl: typeof cacheControl;
-  /** `@d11` FastImage-compatible enum: `fade | none`. */
+  /** FastImage-compatible enum: `fade | none` (passed through when supported). */
   transition: typeof transition;
   /** Preloads images into the native (Glide / SDWebImage) cache. */
   preload: (sources: Source[]) => void;
@@ -273,9 +273,8 @@ export type FastImageComponentType = typeof MemoizedFastImage &
 
 /**
  * The definitive FastImage successor: 100% API-compatible with
- * `react-native-fast-image` / `@d11/react-native-fast-image`, plus
- * automatic sizing (`autoHeight`, `autoWidth`), placeholders, transitions,
- * retries and lazy loading.
+ * `react-native-fast-image`, plus automatic sizing (`autoHeight`,
+ * `autoWidth`), placeholders, transitions, retries and lazy loading.
  *
  * Migration is one line: change the import.
  */

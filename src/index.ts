@@ -5,8 +5,7 @@
  * compatibility, plus automatic height/width calculation, aspect-ratio
  * caching, promise deduplication, retries, placeholders and transitions.
  *
- * Migration from `react-native-fast-image` / `@d11/react-native-fast-image`
- * requires changing only the import.
+ * Migration from `react-native-fast-image` requires changing only the import.
  */
 import { FastImage } from './FastImage';
 

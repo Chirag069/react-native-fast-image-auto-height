@@ -31,7 +31,7 @@ body:
   - type: input
     id: engine-version
     attributes:
-      label: '@d11/react-native-fast-image version'
+      label: react-native-fast-image version
     validations:
       required: true
   - type: input

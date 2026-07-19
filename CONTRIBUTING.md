@@ -25,7 +25,7 @@ Please read [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) before writing code. 
 
 - Layers flow downward only: `components → hooks → services → managers → cache`.
 - `Image.getSize` may only be called in `src/utils/getImageSize.ts`; everything goes through `ImageSizeService`.
-- Only `src/components/InternalFastImage.tsx` may import `@d11/react-native-fast-image`.
+- Only `src/components/InternalFastImage.tsx` may import `react-native-fast-image`.
 - No `any`, no `ts-ignore`, no `eslint-disable`.
 - Business logic lives in services; hooks have one responsibility; utilities are pure functions.
 
@@ -45,7 +45,7 @@ Small, focused PRs merge fastest.
 
 ## Reporting bugs
 
-Use the bug-report issue template and include a minimal reproduction (an Expo Snack or a small repo is ideal), plus your React Native, `@d11/react-native-fast-image` and library versions.
+Use the bug-report issue template and include a minimal reproduction (an Expo Snack or a small repo is ideal), plus your React Native, `react-native-fast-image` and library versions.
 
 ## Code of conduct
 

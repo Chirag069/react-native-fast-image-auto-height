@@ -22,5 +22,5 @@ notes unless you prefer otherwise.
 
 This library contains no native code and makes no network requests of its own
 beyond delegating image loading and size probes to React Native and
-`@d11/react-native-fast-image`. Reports about those layers should also be
+`react-native-fast-image`. Reports about those layers should also be
 raised upstream with the respective projects.

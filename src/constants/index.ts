@@ -7,7 +7,7 @@ import type {
 
 /**
  * FastImage-compatible enums. Values are identical to
- * `@d11/react-native-fast-image` so migration is import-only.
+ * `react-native-fast-image` so migration is import-only.
  */
 export const resizeMode: Record<ResizeMode, ResizeMode> = {
   contain: 'contain',

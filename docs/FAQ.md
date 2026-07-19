@@ -2,15 +2,15 @@
 
 ### Is this a wrapper around FastImage?
 
-It is an architecture layer over the maintained FastImage engine. The native pipeline (Glide/SDWebImage, priorities, cache control, preloading) comes from `@d11/react-native-fast-image`; everything above it — automatic sizing, the aspect-ratio cache, request deduplication, retries, placeholders, transitions, lazy loading, and the typed public API — is this library. When you use no new props, the render output is exactly one native FastImage.
+It is an architecture layer over the FastImage engine. The native pipeline (Glide/SDWebImage, priorities, cache control, preloading) comes from `react-native-fast-image`; everything above it — automatic sizing, the aspect-ratio cache, request deduplication, retries, placeholders, transitions, lazy loading, and the typed public API — is this library. When you use no new props, the render output is exactly one native FastImage.
 
-### Why depend on `@d11/react-native-fast-image` instead of forking the native code?
+### Why depend on `react-native-fast-image` instead of forking the native code?
 
-Maintaining forked Glide/SDWebImage bindings is what killed the original FastImage. Delegating to the actively maintained fork means every native fix (new RN versions, Fabric changes, AVIF) lands here with zero effort, forever. The dependency is isolated behind a single file, so the engine can be swapped in a one-file change if the ecosystem moves.
+Maintaining forked Glide/SDWebImage bindings is a large ongoing cost. Delegating to the engine package keeps this library focused on sizing, caching, and UX. The dependency is isolated behind a single file (`InternalFastImage.tsx`), so the engine can be swapped in a one-file change if the ecosystem moves.
 
 ### Does it work with the New Architecture?
 
-Yes. The engine supports Fabric (>= 8.7.0) and TurboModules (>= 8.8.0); this library's own code is pure TypeScript and renderer-agnostic.
+This library's own code is pure TypeScript and renderer-agnostic. New Architecture support depends on the installed `react-native-fast-image` version and your React Native setup.
 
 ### How is the height calculated before the image loads?
 
@@ -46,7 +46,7 @@ Not yet. In v1 `lazy` defers loading until the JS thread is idle. Viewport-based
 
 ### GIF, WebP, AVIF, SVG?
 
-Format support comes from the engine: GIF, WebP and AVIF work as in `@d11/react-native-fast-image` (SVG via their documented setup).
+Format support comes from the engine: GIF, WebP and AVIF work as in `react-native-fast-image` (SVG via their documented setup).
 
 ### Can I build my own component on this infrastructure?
 

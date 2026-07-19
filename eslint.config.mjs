@@ -49,7 +49,7 @@ export default tseslint.config(
         {
           paths: [
             {
-              name: '@d11/react-native-fast-image',
+              name: 'react-native-fast-image',
               message:
                 'Only src/components/InternalFastImage.tsx may import the native engine.',
             },

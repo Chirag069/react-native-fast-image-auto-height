@@ -58,7 +58,7 @@ jobs:
         run: npm ci
 
       - name: Upgrade to latest engine and RN
-        run: npm install --save-dev @d11/react-native-fast-image@latest react-native@latest
+        run: npm install --save-dev react-native-fast-image@latest react-native@latest
 
       - name: Typecheck against latest
         run: npm run typecheck

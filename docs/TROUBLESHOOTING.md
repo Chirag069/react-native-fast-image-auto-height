@@ -1,11 +1,11 @@
 # Troubleshooting
 
-## "Unable to resolve module @d11/react-native-fast-image"
+## "Unable to resolve module react-native-fast-image"
 
 The native engine is a peer dependency and must be installed by your app:
 
 ```sh
-npm install @d11/react-native-fast-image
+npm install react-native-fast-image
 cd ios && pod install
 ```
 
@@ -49,12 +49,12 @@ const [failed, setFailed] = useState(false);
 />;
 ```
 
-## Jest: "Cannot find module @d11/react-native-fast-image" in app tests
+## Jest: "Cannot find module react-native-fast-image" in app tests
 
 Mock the engine in your Jest setup (this library's own test suite does the same):
 
 ```js
-jest.mock('@d11/react-native-fast-image', () => {
+jest.mock('react-native-fast-image', () => {
   const React = require('react');
   const { Image } = require('react-native');
   const Mock = React.forwardRef((props, ref) =>

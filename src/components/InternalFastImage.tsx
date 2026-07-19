@@ -3,7 +3,7 @@
  * (enforced by lint). If the ecosystem moves to a different FastImage fork
  * or backend, this seam is the single place that changes.
  */
-import NativeFastImage from '@d11/react-native-fast-image';
+import NativeFastImage from 'react-native-fast-image';
 import type { ComponentType, ReactNode } from 'react';
 import type {
   AccessibilityProps,
@@ -21,7 +21,7 @@ import type { OnLoadEvent, OnProgressEvent } from '../types/events';
 
 /**
  * The native surface this library consumes, expressed in standard React
- * Native types. Matches `@d11/react-native-fast-image`'s runtime contract.
+ * Native types. Matches `react-native-fast-image`'s runtime contract.
  */
 export interface InternalFastImageProps extends AccessibilityProps {
   source?: FastImageSource;
@@ -46,10 +46,11 @@ export interface InternalFastImageProps extends AccessibilityProps {
  * Render-compatible pass-through to the native FastImage component.
  *
  * The cast below is the deliberate, single type bridge of the library:
- * `@d11` declares its own `ImageStyle` with border radii narrowed to
- * `number`, which rejects perfectly valid React Native styles (animated
- * values). The runtime component accepts standard RN styles unchanged, so
- * we re-type the seam with the standard types once, here, and nowhere else.
+ * `react-native-fast-image` declares its own `ImageStyle` with border radii
+ * narrowed to `number`, which rejects perfectly valid React Native styles
+ * (animated values). The runtime component accepts standard RN styles
+ * unchanged, so we re-type the seam with the standard types once, here, and
+ * nowhere else.
  */
 export const InternalFastImage =
   NativeFastImage as unknown as ComponentType<InternalFastImageProps>;

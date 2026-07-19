@@ -8,9 +8,9 @@
     "ios": "react-native run-ios"
   },
   "dependencies": {
-    "@d11/react-native-fast-image": "^8.13.0",
     "react": "19.2.3",
-    "react-native": "^0.86.0"
+    "react-native": "^0.86.0",
+    "react-native-fast-image": "^8.6.3"
   },
   "devDependencies": {
     "@react-native-community/cli": "latest",

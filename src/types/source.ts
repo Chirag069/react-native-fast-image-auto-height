@@ -1,9 +1,9 @@
 /**
  * Source-related types.
  *
- * These are 100% wire-compatible with `react-native-fast-image` /
- * `@d11/react-native-fast-image`. Names and shapes are frozen for
- * backward compatibility and must never be renamed.
+ * These are 100% wire-compatible with `react-native-fast-image`.
+ * Names and shapes are frozen for backward compatibility and must never
+ * be renamed.
  */
 
 /**
@@ -25,7 +25,7 @@ export type Priority = 'low' | 'normal' | 'high';
 export type CacheControlMode = 'immutable' | 'web' | 'cacheOnly';
 
 /**
- * Native display transition (`@d11/react-native-fast-image` compat).
+ * Native display transition (passed through when the engine supports it).
  * Mirrors `FastImage.transition.*`.
  */
 export type NativeTransition = 'fade' | 'none';

@@ -8,7 +8,7 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ### Added
 
-- 100% FastImage-compatible `<FastImage />` component (props, events, enums, statics identical to `react-native-fast-image` / `@d11/react-native-fast-image`).
+- 100% FastImage-compatible `<FastImage />` component (props, events, enums, statics identical to `react-native-fast-image`).
 - `autoHeight` / `autoWidth`: automatic dimension calculation from the intrinsic aspect ratio, with numeric, percentage and flex sizes supported.
 - `estimatedAspectRatio` for jump-free provisional layout.
 - `onSizeResolved` callback with intrinsic dimensions, aspect ratio and cache provenance.

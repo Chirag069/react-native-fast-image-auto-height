@@ -13,7 +13,7 @@ Managers          CacheManager, RequestManager
    ↓
 Cache             AspectRatioCache (LRU), PendingRequestCache, MemoryCache
    ↓
-Native            @d11/react-native-fast-image (Glide / SDWebImage)
+Native            react-native-fast-image (Glide / SDWebImage)
 ```
 
 Layer rules are **enforced by ESLint**, not convention (see `eslint.config.mjs`):

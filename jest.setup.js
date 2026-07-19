@@ -2,7 +2,7 @@
 
 // The native FastImage engine is mocked in all tests: unit tests exercise the
 // pure TS layers directly, and component tests only need a render-compatible stub.
-jest.mock('@d11/react-native-fast-image', () => {
+jest.mock('react-native-fast-image', () => {
   const React = require('react');
   const { Image, View } = require('react-native');
 

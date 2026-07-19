@@ -14,7 +14,7 @@ import type { OnLoadEvent, OnProgressEvent } from './events';
  * Props for the public `<FastImage />` component.
  *
  * The first block is byte-for-byte compatible with
- * `@d11/react-native-fast-image` — migrating requires changing only the
+ * `react-native-fast-image` — migrating requires changing only the
  * import. The second block is additive and fully optional: omitting every
  * new prop yields exactly the classic FastImage behavior.
  */
@@ -34,9 +34,9 @@ export interface FastImageProps extends AccessibilityProps {
   /** Blur radius applied to the image. */
   blurRadius?: number;
   /**
-   * Native transition applied when the image is displayed
-   * (`@d11/react-native-fast-image` compat). Prefer
-   * {@link transitionDuration} for a configurable JS-driven fade.
+   * Native transition applied when the image is displayed (passed through
+   * when the engine supports it). Prefer {@link transitionDuration} for a
+   * configurable JS-driven fade.
    */
   transition?: NativeTransition;
   /** Style for the image. Supports `borderRadius`. */

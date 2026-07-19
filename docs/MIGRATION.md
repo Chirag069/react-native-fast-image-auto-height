@@ -1,20 +1,19 @@
 # Migration guide
 
-## From `react-native-fast-image` or `@d11/react-native-fast-image`
+## From `react-native-fast-image`
 
 Change the import:
 
 ```diff
 - import FastImage from 'react-native-fast-image';
-- import FastImage from '@d11/react-native-fast-image';
 + import FastImage from 'react-native-fast-image-auto-height';
 ```
 
 That is the entire migration. The following are guaranteed to work unchanged:
 
-- **Props**: `source` (with `uri`, `headers`, `priority`, `cache`), `defaultSource`, `resizeMode`, `fallback`, `tintColor`, `blurRadius`, `transition`, `style`, `testID`, `children`, accessibility props
+- **Props**: `source` (with `uri`, `headers`, `priority`, `cache`), `defaultSource`, `resizeMode`, `fallback`, `tintColor`, `style`, `testID`, `children`, accessibility props
 - **Events**: `onLoadStart`, `onProgress`, `onLoad`, `onError`, `onLoadEnd`, `onLayout`
-- **Enums**: `FastImage.resizeMode`, `FastImage.priority`, `FastImage.cacheControl`, `FastImage.transition`
+- **Enums**: `FastImage.resizeMode`, `FastImage.priority`, `FastImage.cacheControl`
 - **Statics**: `FastImage.preload(sources)`, `FastImage.clearMemoryCache()`, `FastImage.clearDiskCache()`
 - **Types**: `FastImageProps`, `Source`, `ResizeMode`, `Priority`, `OnLoadEvent`, `OnProgressEvent`
 
@@ -22,18 +21,24 @@ When no new prop is used, the component renders exactly one native FastImage —
 
 ### If you haven't installed the engine yet
 
-`@d11/react-native-fast-image` is a peer dependency:
+`react-native-fast-image` is a peer dependency:
 
 ```sh
-npm install @d11/react-native-fast-image
+npm install react-native-fast-image
 cd ios && pod install
 ```
 
-If you were previously on the original `react-native-fast-image`, remove it — `@d11` is the maintained fork of the same native code:
+### Coming from `@d11/react-native-fast-image`
+
+Remove the Dream11 fork and install the original engine:
 
 ```sh
-npm uninstall react-native-fast-image
+npm uninstall @d11/react-native-fast-image
+npm install react-native-fast-image
+cd ios && pod install
 ```
+
+Then change the import to this library as above.
 
 ## From `react-native-auto-height-image`
 
