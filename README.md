@@ -1,67 +1,90 @@
 # react-native-fast-image-auto-height
 
-**The definitive FastImage successor.** FastImage performance and 100% API compatibility, plus the features FastImage never shipped: automatic height/width calculation, aspect-ratio caching, request deduplication, retries, placeholders, fade transitions and lazy loading.
+**FastImage + automatic height/width.** Same API and native performance (Glide / SDWebImage), with jump-free auto-sizing, caching, retries, placeholders, and fade transitions.
 
 [![npm version](https://img.shields.io/npm/v/react-native-fast-image-auto-height.svg)](https://www.npmjs.com/package/react-native-fast-image-auto-height)
 [![license](https://img.shields.io/npm/l/react-native-fast-image-auto-height.svg)](./LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](./tsconfig.json)
-
-- ✅ **Drop-in FastImage replacement** — migration is one import line
-- ✅ **Auto height / auto width** from the image's intrinsic aspect ratio
-- ✅ **FastImage performance** — Glide (Android) / SDWebImage (iOS) via [`react-native-fast-image`](https://github.com/DylanVann/react-native-fast-image)
-- ✅ **Android-safe auto-sizing** — defers native load until a ratio is known; defaults `autoHeight` / `autoWidth` to `contain`
-- ✅ **New Architecture ready** — Fabric + TurboModules (subject to engine support)
-- ✅ **In-memory aspect-ratio cache** with LRU eviction — a URL is measured once per session
-- ✅ **Promise deduplication** — 100 cells asking for the same image trigger exactly one size probe
-- ✅ **Retries, placeholders, fade transitions, lazy loading**
-- ✅ **Strict TypeScript**, every public type exported
-- ✅ Built for **FlatList, FlashList, Pinterest/masonry layouts and infinite feeds**
-
-## Why this package exists
-
-No other library provides all of this at once:
-
-| Capability | `react-native-fast-image` | `react-native-auto-height-image` | **this package** |
-| --- | :-: | :-: | :-: |
-| Native caching (Glide / SDWebImage) | ✅ | ❌ (RN `Image`) | ✅ |
-| Automatic height | ❌ | ✅ | ✅ |
-| Automatic width | ❌ | ❌ | ✅ |
-| Aspect-ratio caching + dedup | ❌ | ⚠️ | ✅ |
-| Retries / placeholder / transition / lazy | ❌ | ❌ | ✅ |
-| Strict TypeScript, typed public API | ⚠️ | ⚠️ | ✅ |
-
-## Installation
-
-```sh
-npm install react-native-fast-image-auto-height react-native-fast-image
-# or
-yarn add react-native-fast-image-auto-height react-native-fast-image
-```
-
-`react-native-fast-image` (>= 8.6.0) is a peer dependency — it is the native engine; this library is the intelligence layer on top. Then:
-
-```sh
-cd ios && pod install
-```
-
-Requires React Native >= 0.71. Works on the New Architecture and the legacy renderer (subject to engine support).
-
-> **Note:** `react-native-fast-image@8.6.x` peers React 17/18 only. If your app uses React 19, install with `legacy-peer-deps` (this repo ships an `.npmrc` for that).
-
-## Migration from FastImage
-
-Change the import. Done.
 
 ```diff
 - import FastImage from 'react-native-fast-image';
 + import FastImage from 'react-native-fast-image-auto-height';
 ```
 
-Every prop, enum (`FastImage.resizeMode`, `FastImage.priority`, `FastImage.cacheControl`), event and static (`preload`, `clearMemoryCache`, `clearDiskCache`) works unchanged. See [docs/MIGRATION.md](./docs/MIGRATION.md).
+---
 
-## Usage
+## Features
 
-### Classic FastImage (unchanged)
+| | Feature | What you get |
+| --- | --- | --- |
+| 🖼️ | **Drop-in FastImage** | Same props, events, enums, and statics — change only the import |
+| 📐 | **`autoHeight` / `autoWidth`** | Height or width from the real aspect ratio; works with numeric, `%`, and flex sizes |
+| ⚡ | **Native performance** | Glide (Android) + SDWebImage (iOS) via [`react-native-fast-image`](https://github.com/DylanVann/react-native-fast-image) |
+| 🧠 | **Aspect-ratio cache** | In-memory LRU — each URL is measured once per session |
+| 🔁 | **Request deduplication** | Many cells, one `Image.getSize` probe |
+| 📱 | **Android-safe sizing** | Loads only after a ratio is known; auto-size defaults to `contain` (no cover-zoom) |
+| 🦴 | **Placeholder** | Any React node, remote source, or `require(...)` while loading |
+| ✨ | **Fade transition** | `transitionDuration` on the native animation driver |
+| 🔄 | **Retries** | `retryCount` / `retryDelay` for flaky CDNs |
+| 💤 | **Lazy load** | Defer until the JS thread is idle |
+| 📜 | **List-ready** | FlatList / FlashList / masonry — `prefetchSize` for zero layout jumps |
+| 🧩 | **Hooks + config** | `useImageDimensions`, `useAutoHeight`, `useAutoWidth`, `FastImageConfigProvider` |
+| 🔒 | **Strict TypeScript** | Every public type exported |
+
+### Compared to alternatives
+
+| | `react-native-fast-image` | `react-native-auto-height-image` | **`react-native-fast-image-auto-height`** |
+| --- | :-: | :-: | :-: |
+| Native cache (Glide / SDWebImage) | ✅ | ❌ | ✅ |
+| Auto height | ❌ | ✅ | ✅ |
+| Auto width | ❌ | ❌ | ✅ |
+| Ratio cache + dedup | ❌ | ⚠️ | ✅ |
+| Placeholder / fade / retry / lazy | ❌ | ❌ | ✅ |
+| Typed public API | ⚠️ | ⚠️ | ✅ |
+
+---
+
+## Why use `react-native-fast-image-auto-height`?
+
+Other libraries solve **one** half of the problem. This package is the only one that keeps FastImage’s native pipeline **and** adds production auto-sizing on top.
+
+| If you use… | You get… | You miss… |
+| --- | --- | --- |
+| **`react-native-fast-image` alone** | Fast native caching, priorities, headers | Auto height/width — you hardcode sizes or fight layout jumps in feeds |
+| **`react-native-auto-height-image` alone** | Auto height from aspect ratio | Glide/SDWebImage — uses RN `Image`, slower cache, no FastImage API |
+| **Rolling your own** | Custom hacks around `Image.getSize` | Dedup, LRU ratio cache, Android Glide race fixes, retries, placeholders, typed API |
+
+**What only this package does together:**
+
+1. **One import migration** — keep every FastImage prop/event/static; add `autoHeight` when you need it.
+2. **Jump-free lists** — `estimatedAspectRatio` + `prefetchSize` + in-memory LRU so FlatList/FlashList cells mount at final height.
+3. **Android done right** — ignore bad FastImage `onLoad` sizes, size from `Image.getSize`, don’t load until the box exists (no cover-zoom).
+4. **One probe per URL** — 100 cells asking for the same image share a single size request.
+5. **UX extras on the same component** — placeholder, fade, retries, lazy — without wrapping FastImage yourself.
+
+Use it when you want **FastImage performance** and **auto-sized layouts** without stitching two libraries (or custom sizing code) together.
+
+---
+
+## Install
+
+```sh
+npm install react-native-fast-image-auto-height react-native-fast-image
+cd ios && pod install
+```
+
+| Requirement | Version |
+| --- | --- |
+| React Native | >= 0.71 |
+| Peer engine | `react-native-fast-image` >= 8.6.0 |
+
+React 19: use `--legacy-peer-deps` if npm reports a peer conflict (see [Installation](./docs/INSTALLATION.md)).
+
+---
+
+## Quick start
+
+### Classic FastImage
 
 ```tsx
 import FastImage from 'react-native-fast-image-auto-height';
@@ -70,49 +93,13 @@ import FastImage from 'react-native-fast-image-auto-height';
   style={{ width: 200, height: 200 }}
   source={{
     uri: 'https://unsplash.it/400/400?image=1',
-    headers: { Authorization: 'someAuthToken' },
     priority: FastImage.priority.normal,
   }}
   resizeMode={FastImage.resizeMode.contain}
 />;
 ```
 
-### Automatic height
-
-```tsx
-<FastImage
-  source={{ uri: 'https://example.com/photo.jpg' }}
-  style={{ width: '100%' }}
-  autoHeight
-  estimatedAspectRatio={4 / 3} // provisional layout before the size is known (recommended)
-  onSizeResolved={({ width, height, aspectRatio, fromCache }) => {
-    console.log(`intrinsic size ${width}x${height}`);
-  }}
-/>
-```
-
-Size resolution order:
-
-1. In-memory aspect-ratio cache (synchronous)
-2. `estimatedAspectRatio` (provisional layout; also lets the native image load)
-3. `Image.getSize` / `Image.getSizeWithHeaders` (deduplicated probe) — **source of truth on Android**
-4. FastImage `onLoad` dimensions — **iOS only** (Android `onLoad` often reports view size and is ignored)
-
-Numeric `style.width` → explicit pixel height. Percentage/flex width → Yoga `aspectRatio`. Once resolved, every future render of that URL is synchronous.
-
-With `autoHeight` / `autoWidth`, `resizeMode` defaults to `contain` (pass `cover` explicitly if you want cropping).
-
-### Automatic width
-
-```tsx
-<FastImage
-  source={{ uri: 'https://example.com/photo.jpg' }}
-  style={{ height: 240 }}
-  autoWidth
-/>
-```
-
-### Placeholder, transition, retries, lazy
+### Auto height (recommended pattern)
 
 ```tsx
 <FastImage
@@ -120,21 +107,18 @@ With `autoHeight` / `autoWidth`, `resizeMode` defaults to `contain` (pass `cover
   style={{ width: '100%' }}
   autoHeight
   estimatedAspectRatio={4 / 3}
-  placeholder={<Skeleton />}         // any node, or an image source
-  transitionDuration={200}           // fade-in on load (ms)
-  retryCount={3}                     // retry failed loads
-  retryDelay={500}                   // ms between retries
-  lazy                               // defer load until the JS thread is idle
+  placeholder={<Skeleton />}
+  transitionDuration={200}
 />
 ```
 
-### Feeds: prefetch sizes for jump-free lists
+### Feeds without layout jumps
 
 ```tsx
-// While your feed data loads, warm the ratio cache:
-await Promise.all(items.map((item) => FastImage.prefetchSize({ uri: item.imageUrl })));
+await Promise.all(
+  items.map((item) => FastImage.prefetchSize({ uri: item.imageUrl }))
+);
 
-// Every list cell now mounts at its final height — zero layout jumps.
 <FlashList
   data={items}
   renderItem={({ item }) => (
@@ -148,67 +132,70 @@ await Promise.all(items.map((item) => FastImage.prefetchSize({ uri: item.imageUr
 />;
 ```
 
-### Hooks — build your own image components
+### Hooks & global defaults
 
 ```tsx
-import { useImageDimensions, useAutoHeight } from 'react-native-fast-image-auto-height';
+import {
+  useImageDimensions,
+  useAutoHeight,
+  FastImageConfigProvider,
+} from 'react-native-fast-image-auto-height';
 
-const { aspectRatio, status } = useImageDimensions({ uri });
+const { aspectRatio } = useImageDimensions({ uri });
 const height = useAutoHeight({ enabled: true, width: 300, aspectRatio });
-```
-
-### Global defaults
-
-```tsx
-import { FastImageConfigProvider } from 'react-native-fast-image-auto-height';
 
 <FastImageConfigProvider config={{ retryCount: 2, transitionDuration: 150 }}>
   <App />
 </FastImageConfigProvider>;
 ```
 
-## API
+---
 
-All FastImage props plus:
+## Auto-size API
 
-| Prop | Type | Default | Description |
-| --- | --- | --- | --- |
-| `autoHeight` | `boolean` | `false` | Compute height from width × intrinsic aspect ratio |
-| `autoWidth` | `boolean` | `false` | Compute width from height × intrinsic aspect ratio |
-| `estimatedAspectRatio` | `number` | — | Provisional `width / height` before resolution (recommended for auto-size) |
-| `onSizeResolved` | `(size) => void` | — | Fired once when the intrinsic size is known |
-| `placeholder` | `ReactNode \| Source \| number` | — | Shown while loading |
-| `transitionDuration` | `number` | `0` | Fade-in duration in ms (`0` = off, classic behavior) |
-| `retryCount` | `number` | `0` | Load retries (`0` = classic behavior) |
-| `retryDelay` | `number` | `250` | Delay between retries in ms |
-| `lazy` | `boolean` | `false` | Defer load until the JS thread is idle |
+| Prop | Default | Description |
+| --- | --- | --- |
+| `autoHeight` | `false` | Derive height from width × aspect ratio |
+| `autoWidth` | `false` | Derive width from height × aspect ratio |
+| `estimatedAspectRatio` | — | Provisional `width / height` (recommended) |
+| `onSizeResolved` | — | Called once when intrinsic size is known |
+| `placeholder` | — | Node or image source while loading |
+| `transitionDuration` | `0` | Fade-in ms (`0` = off) |
+| `retryCount` | `0` | Load retries |
+| `retryDelay` | `250` | Delay between retries (ms) |
+| `lazy` | `false` | Load when the JS thread is idle |
 
-`resizeMode` defaults to `'cover'` in classic mode, and to `'contain'` when `autoHeight` / `autoWidth` is enabled (unless you pass it explicitly).
+**Statics:** `FastImage.prefetchSize(source)` · `FastImage.clearSizeCache()`  
+(+ all classic FastImage statics: `preload`, `clearMemoryCache`, `clearDiskCache`, enums)
 
-New statics: `FastImage.prefetchSize(source)`, `FastImage.clearSizeCache()`.
+**Defaults worth knowing**
 
-Full reference: [docs/API.md](./docs/API.md).
+- Classic mode → `resizeMode="cover"`
+- `autoHeight` / `autoWidth` → `resizeMode="contain"` (override with `cover` if you want crop)
+- Size cache → **memory LRU only** (no disk)
+- Android → sizes from `Image.getSize` (not FastImage `onLoad`)
 
-## Documentation
+Full reference: [docs/API.md](./docs/API.md)
 
-- [Installation](./docs/INSTALLATION.md)
-- [Migration guide](./docs/MIGRATION.md)
-- [API reference](./docs/API.md)
-- [Architecture](./docs/ARCHITECTURE.md)
-- [Performance guide](./docs/PERFORMANCE.md)
-- [FAQ](./docs/FAQ.md)
-- [Troubleshooting](./docs/TROUBLESHOOTING.md)
+---
 
-## Design decisions worth knowing
+## Docs
 
-- **Memory-only size cache.** Aspect ratios live in an in-memory LRU only (no disk). Persisting them would break layouts when a CDN replaces an image behind the same URL.
-- **One native seam.** Exactly one file imports `react-native-fast-image` (`InternalFastImage.tsx`).
-- **User styles always win.** `autoHeight` never overrides an explicit `style.height`.
-- **Android sizes from `Image.getSize`.** FastImage's Android `onLoad` dimensions are ignored (they often report view size). Auto-sized images do not load until a ratio is known.
+| Guide | |
+| --- | --- |
+| [Installation](./docs/INSTALLATION.md) | Setup, peers, Expo |
+| [Migration](./docs/MIGRATION.md) | From FastImage or auto-height-image |
+| [API](./docs/API.md) | Props, statics, hooks, types |
+| [Architecture](./docs/ARCHITECTURE.md) | Layers, sizing, cache |
+| [Performance](./docs/PERFORMANCE.md) | Feeds, prefetch, lists |
+| [FAQ](./docs/FAQ.md) | Common questions |
+| [Troubleshooting](./docs/TROUBLESHOOTING.md) | Android zoom, blank load, Jest |
+
+---
 
 ## Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md). Issues and PRs welcome.
+See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
