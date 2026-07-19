@@ -125,7 +125,7 @@ interface FastImageConfig {
 
 ## Exported types
 
-`FastImageProps`, `FastImageConfig`, `Source`, `FastImageSource`, `ResizeMode`, `Priority`, `CacheControlMode`, `NativeTransition`, `OnLoadEvent`, `OnProgressEvent`, `ImageDimensions`, `ResolvedImageSize`, `SizeResolutionStatus`, `ResolveSizeOptions`, `SizeCacheStorage`.
+`FastImageProps`, `FastImageConfig`, `Source`, `FastImageSource`, `ResizeMode`, `Priority`, `CacheControlMode`, `NativeTransition`, `OnLoadEvent`, `OnProgressEvent`, `ImageDimensions`, `ResolvedImageSize`, `SizeResolutionStatus`, `ResolveSizeOptions`.
 
 ```ts
 interface ResolvedImageSize {

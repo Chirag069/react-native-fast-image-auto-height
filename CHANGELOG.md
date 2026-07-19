@@ -8,19 +8,18 @@ adheres to [Semantic Versioning](https://semver.org/).
 
 ### Changed
 
-- Peer / native engine is now [`react-native-fast-image`](https://github.com/DylanVann/react-native-fast-image) (>= 8.6.0) instead of `@d11/react-native-fast-image`.
+- Peer dependency is [`react-native-fast-image`](https://github.com/DylanVann/react-native-fast-image) (>= 8.6.0).
 - With `autoHeight` / `autoWidth`, `resizeMode` defaults to `'contain'` (classic mode still defaults to `'cover'`).
-- Auto-sized percentage/flex widths use Yoga `aspectRatio` instead of measuring via `onLayout`.
+- Auto-sized percentage/flex widths use Yoga `aspectRatio`.
 
 ### Fixed
 
-- Android auto-height looking zoomed/cropped: ignore FastImage `onLoad` width/height on Android (they often report view/layout size) and size from `Image.getSize` instead, so the aspect-ratio cache is not poisoned.
-- Android Glide race: do not load auto-sized images until a ratio is known; size with explicit height or Yoga `aspectRatio`; remount when the ratio settles.
+- Android auto-height zoom/crop: ignore FastImage `onLoad` sizes on Android; size from `Image.getSize`.
+- Android Glide race: load auto-sized images only after a ratio is known; remount when the ratio settles.
 
 ### Docs
 
-- Aligned README and all `docs/*` guides with the current engine, auto-size semantics, and Android behavior.
-- Clarified size cache is memory-only; ARCHITECTURE features table lists only what ships.
+- Docs describe only current behavior and the `react-native-fast-image` peer (no alternate-engine migration paths).
 
 ## [1.0.0] - 2026-07-19
 
@@ -35,5 +34,4 @@ adheres to [Semantic Versioning](https://semver.org/).
 - `FastImage.prefetchSize()` and `FastImage.clearSizeCache()` statics.
 - Public hooks: `useImageDimensions`, `useAutoHeight`, `useAutoWidth`.
 - `FastImageConfigProvider` for app-wide defaults.
-- `SizeCacheStorage` type export (size cache itself is in-memory LRU only).
 - Strict TypeScript throughout; every public type exported.

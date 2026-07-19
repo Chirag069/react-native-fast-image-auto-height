@@ -6,7 +6,7 @@ It is an architecture layer over the FastImage engine. The native pipeline (Glid
 
 ### Why depend on `react-native-fast-image` instead of forking the native code?
 
-Maintaining forked Glide/SDWebImage bindings is a large ongoing cost. Delegating to the engine package keeps this library focused on sizing, caching, and UX. The dependency is isolated behind a single file (`InternalFastImage.tsx`), so the engine can be swapped in a one-file change if the ecosystem moves.
+Glide/SDWebImage bindings are maintained in that package. This library focuses on auto-sizing, caching, and UX, and imports the engine from a single file (`InternalFastImage.tsx`).
 
 ### Does it work with the New Architecture?
 

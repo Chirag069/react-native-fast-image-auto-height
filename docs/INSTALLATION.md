@@ -2,8 +2,8 @@
 
 ## Requirements
 
-- React Native >= 0.71 (New Architecture and legacy renderer both supported, subject to engine support)
-- `react-native-fast-image` >= 8.6.0 (the native engine, a peer dependency)
+- React Native >= 0.71
+- `react-native-fast-image` >= 8.6.0 (peer dependency — native engine)
 - React 17, 18, or 19 (React 19 may need `legacy-peer-deps` — see below)
 
 ## Steps
@@ -40,26 +40,14 @@ legacy-peer-deps=true
 
 ## Why is the native engine a peer dependency?
 
-Two reasons, both deliberate:
+1. **No duplicate native modules** — your app and this library must share one `react-native-fast-image` install.
+2. **You control the native version** — bump the peer when you need engine fixes.
 
-1. **No duplicate native modules.** If your app (or another library) already uses `react-native-fast-image`, a bundled copy would collide at the native level. A peer dependency guarantees exactly one native module.
-2. **You control the native version.** Native upgrades land in your app the moment you bump the peer — no waiting for this library to re-release.
-
-This library contains **zero native code** of its own: it is a typed intelligence layer (sizing, caching, deduplication, retries, transitions) over the Glide/SDWebImage engine provided by `react-native-fast-image`.
-
-## Coming from `@d11/react-native-fast-image`
-
-```sh
-npm uninstall @d11/react-native-fast-image
-npm install react-native-fast-image
-cd ios && pod install
-```
-
-Then import this library instead of the Dream11 fork (see [MIGRATION.md](./MIGRATION.md)).
+This library has **zero native code** of its own. It is a TypeScript layer (auto-size, cache, retries, placeholders, transitions) over Glide/SDWebImage via `react-native-fast-image`.
 
 ## Expo
 
-Works in Expo development builds and bare workflow (any workflow that supports native modules). Not supported in Expo Go, because Expo Go cannot load the FastImage native module.
+Works in Expo development builds and bare workflow. Not supported in Expo Go (no custom native modules).
 
 ## Verifying the install
 
@@ -74,4 +62,4 @@ import FastImage from 'react-native-fast-image-auto-height';
 />;
 ```
 
-If the image renders and sizes itself, everything is wired correctly. Prefer `estimatedAspectRatio` so Android has a definite box before the native image loads.
+If the image renders and sizes itself, the install is correct.

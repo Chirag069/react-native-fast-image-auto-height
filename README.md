@@ -202,7 +202,7 @@ Full reference: [docs/API.md](./docs/API.md).
 ## Design decisions worth knowing
 
 - **Memory-only size cache.** Aspect ratios live in an in-memory LRU only (no disk). Persisting them would break layouts when a CDN replaces an image behind the same URL.
-- **One native seam.** Exactly one file imports `react-native-fast-image`. If the ecosystem moves, this library moves with a one-file change.
+- **One native seam.** Exactly one file imports `react-native-fast-image` (`InternalFastImage.tsx`).
 - **User styles always win.** `autoHeight` never overrides an explicit `style.height`.
 - **Android sizes from `Image.getSize`.** FastImage's Android `onLoad` dimensions are ignored (they often report view size). Auto-sized images do not load until a ratio is known.
 
