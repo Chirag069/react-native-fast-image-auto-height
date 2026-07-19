@@ -28,9 +28,20 @@ Checklist:
 
 `Image.getSize` uses React Native's image pipeline, which has a separate cache from Glide/SDWebImage. This can cause an extra fetch the *first* time a URL is probed before it renders. Once any image with that URL renders (or the probe completes), the ratio is cached and no further probes happen that session. If your API already returns image dimensions, pass `estimatedAspectRatio` with the exact value — the probe result then only confirms it.
 
+## Android: image looks zoomed / height is wrong (iOS looks fine)
+
+Usually the aspect-ratio cache was poisoned by FastImage's Android `onLoad` event, which often reports **view/layout size** instead of intrinsic image size. This library ignores those Android `onLoad` dimensions and sizes from `Image.getSize` instead.
+
+If you still see a wrong height after upgrading:
+
+1. Call `FastImage.clearSizeCache()` once (or restart the app) so any previously poisoned entry is dropped.
+2. Prefer React Native >= 0.86 — `Image.getSize` then returns true source dimensions (and EXIF-aware rotation) instead of Fresco's downsampled bitmap size.
+3. Set `estimatedAspectRatio` to the real ratio while the probe runs to avoid a jump.
+4. If you were forcing `resizeMode="cover"` with a wrong height, the crop looks like a zoom; correct height makes `cover` fill the box without cropping the subject.
+
 ## Wrong dimensions for rotated (EXIF) JPEGs on Android
 
-Fixed upstream in React Native 0.86 (`Image.getSize` now reads true source dimensions and honors EXIF rotation). On older RN versions, prefer the `onLoad` path (just render the image) or upgrade.
+Fixed upstream in React Native 0.86 (`Image.getSize` now reads true source dimensions and honors EXIF rotation). On older RN versions, pass `estimatedAspectRatio` from your API when available, or upgrade.
 
 ## `onError` fires later than expected
 

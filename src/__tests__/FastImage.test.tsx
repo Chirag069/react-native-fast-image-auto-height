@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Text } from 'react-native';
+import { Image, Platform, StyleSheet, Text } from 'react-native';
 import type { ImageStyle } from 'react-native';
 import { act, fireEvent, render, waitFor } from '@testing-library/react-native';
 import FastImage, { FastImageConfigProvider } from '../index';
@@ -126,7 +126,11 @@ describe('FastImage', () => {
       expect(flatten(getByTestId('img').props.style).height).toBe(100);
     });
 
-    it('settles height from onLoad when it beats the probe', async () => {
+    it('settles height from onLoad when it beats the probe on iOS', async () => {
+      Object.defineProperty(Platform, 'OS', {
+        configurable: true,
+        get: () => 'ios',
+      });
       getSize.mockImplementation(() => {
         // Probe never answers — the image load wins.
       });
@@ -145,6 +149,35 @@ describe('FastImage', () => {
       });
       await waitFor(() =>
         expect(flatten(getByTestId('img').props.style).height).toBe(200)
+      );
+    });
+
+    it('ignores Android onLoad dimensions and settles from Image.getSize', async () => {
+      Object.defineProperty(Platform, 'OS', {
+        configurable: true,
+        get: () => 'android',
+      });
+      getSize.mockImplementation((_uri, onSuccess) => {
+        setTimeout(() => (onSuccess as SuccessCb)(400, 200), 0);
+      });
+
+      const { getByTestId } = await render(
+        <FastImage
+          testID="img"
+          source={{ uri: 'https://a.com/android-onload.jpg' }}
+          style={{ width: 200 }}
+          autoHeight
+        />
+      );
+
+      // Poisonous Android onLoad payload (view size). If harvested, height
+      // would be ~37 (200 * 200/1080); correct getSize height is 100.
+      await fireEvent(getByTestId('img'), 'load', {
+        nativeEvent: { width: 1080, height: 200 },
+      });
+
+      await waitFor(() =>
+        expect(flatten(getByTestId('img').props.style).height).toBe(100)
       );
     });
 

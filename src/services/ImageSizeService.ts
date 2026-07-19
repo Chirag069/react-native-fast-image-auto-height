@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import type { FastImageSource } from '../types/source';
 import type {
   ImageDimensions,
@@ -102,11 +103,23 @@ class ImageSizeServiceImpl {
    * Harvests intrinsic dimensions delivered by FastImage's `onLoad` event.
    * This is free cache population: the image already loaded through the
    * native pipeline, so no probe is ever needed for this source again.
+   *
+   * On Android this is a no-op. FastImage's `onLoad` often reports the
+   * view/layout size (or other incorrect values) instead of the intrinsic
+   * image size — see DylanVann/react-native-fast-image#461 / #944. Writing
+   * those into the aspect-ratio cache produces a too-short box; with the
+   * default `cover` resizeMode the image then looks zoomed/cropped. iOS
+   * reports true intrinsic size, so harvesting stays enabled there.
+   * Android sizing relies on `Image.getSize` via {@link resolve}.
    */
   reportLoadedDimensions(
     source: FastImageSource,
     dimensions: ImageDimensions
   ): ResolvedImageSize | null {
+    if (Platform.OS === 'android') {
+      return null;
+    }
+
     const key = createCacheKey(source);
     if (key === null) {
       return null;

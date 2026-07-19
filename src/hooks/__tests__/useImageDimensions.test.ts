@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { Image, Platform } from 'react-native';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useImageDimensions } from '../useImageDimensions';
 import { ImageSizeService } from '../../services/ImageSizeService';
@@ -148,7 +148,11 @@ describe('useImageDimensions', () => {
     errorSpy.mockRestore();
   });
 
-  it('settles from reported onLoad dimensions when they beat the probe', async () => {
+  it('settles from reported onLoad dimensions when they beat the probe on iOS', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      configurable: true,
+      get: () => 'ios',
+    });
     getSize.mockImplementation(() => {
       // Probe never answers — the image itself loads first.
     });
@@ -163,6 +167,26 @@ describe('useImageDimensions', () => {
     );
     expect(result.current.status).toBe('resolved');
     expect(result.current.aspectRatio).toBe(2);
+  });
+
+  it('does not settle from Android onLoad reports (layout-size poison)', async () => {
+    Object.defineProperty(Platform, 'OS', {
+      configurable: true,
+      get: () => 'android',
+    });
+    getSize.mockImplementation(() => {
+      // Probe never answers in this assertion window.
+    });
+
+    const { result } = await renderHook(() =>
+      useImageDimensions({ uri: 'https://a.com/android-onload.jpg' })
+    );
+
+    await act(() =>
+      result.current.reportDimensions({ width: 1080, height: 400 })
+    );
+    expect(result.current.status).toBe('resolving');
+    expect(result.current.aspectRatio).toBeNull();
   });
 
   it('resolves local assets synchronously', async () => {

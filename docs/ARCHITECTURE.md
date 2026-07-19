@@ -28,8 +28,8 @@ Layer rules are **enforced by ESLint**, not convention (see `eslint.config.mjs`)
 Dimension data has three sources, consulted in priority order:
 
 1. **AspectRatioCache hit** — synchronous, zero cost, no layout jump. Bounded LRU (500 entries by default; a key string and three numbers per entry).
-2. **FastImage's own `onLoad` event** — `nativeEvent.width/height` arrives free with the actual image load through the native cache. Always harvested into the ratio cache via `ImageSizeService.reportLoadedDimensions`.
-3. **`ImageSizeService.resolve()`** — an explicit `Image.getSize` / `Image.getSizeWithHeaders` probe, deduplicated and retried.
+2. **FastImage's own `onLoad` event** (iOS only) — `nativeEvent.width/height` arrives free with the actual image load through the native cache. Harvested into the ratio cache via `ImageSizeService.reportLoadedDimensions`. On Android this path is skipped because FastImage often reports view/layout size instead of intrinsic size.
+3. **`ImageSizeService.resolve()`** — an explicit `Image.getSize` / `Image.getSizeWithHeaders` probe, deduplicated and retried. This is the Android source of truth for auto-sizing.
 
 Default flow for an uncached remote image with `autoHeight`:
 

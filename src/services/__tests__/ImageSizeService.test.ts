@@ -1,4 +1,4 @@
-import { Image } from 'react-native';
+import { Image, Platform } from 'react-native';
 import { ImageSizeService } from '../ImageSizeService';
 
 type SuccessCb = (width: number, height: number) => void;
@@ -171,7 +171,20 @@ describe('ImageSizeService', () => {
   });
 
   describe('reportLoadedDimensions', () => {
-    it('populates the cache from onLoad payloads', () => {
+    const setPlatformOS = (os: typeof Platform.OS) => {
+      Object.defineProperty(Platform, 'OS', {
+        configurable: true,
+        get: () => os,
+      });
+    };
+
+    afterEach(() => {
+      setPlatformOS('ios');
+    });
+
+    it('populates the cache from onLoad payloads on iOS', () => {
+      setPlatformOS('ios');
+
       const reported = ImageSizeService.reportLoadedDimensions(
         { uri: 'https://a.com/loaded.jpg' },
         { width: 800, height: 400 }
@@ -188,7 +201,23 @@ describe('ImageSizeService', () => {
       ).toEqual({ width: 800, height: 400, aspectRatio: 2, fromCache: true });
     });
 
+    it('ignores FastImage onLoad dimensions on Android (avoids cache poison)', () => {
+      setPlatformOS('android');
+
+      const reported = ImageSizeService.reportLoadedDimensions(
+        { uri: 'https://a.com/android.jpg' },
+        // Typical bad Android payload: view/layout size, not intrinsic size.
+        { width: 1080, height: 400 }
+      );
+      expect(reported).toBeNull();
+      expect(
+        ImageSizeService.resolveFromCache({ uri: 'https://a.com/android.jpg' })
+      ).toBeNull();
+    });
+
     it('ignores unidentifiable sources and invalid dimensions', () => {
+      setPlatformOS('ios');
+
       expect(
         ImageSizeService.reportLoadedDimensions({}, { width: 1, height: 1 })
       ).toBeNull();

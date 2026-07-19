@@ -4,6 +4,12 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and the project
 adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Fixed
+
+- Android auto-height looking zoomed/cropped: ignore FastImage `onLoad` width/height on Android (they often report view/layout size) and size from `Image.getSize` instead, so the aspect-ratio cache is not poisoned.
+
 ## [1.0.0] - 2026-07-19
 
 ### Added
