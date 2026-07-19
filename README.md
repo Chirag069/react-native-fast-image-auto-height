@@ -2,8 +2,8 @@
 
 **FastImage + automatic height/width.** Same API and native performance (Glide / SDWebImage), with jump-free auto-sizing, caching, retries, placeholders, and fade transitions.
 
-[![npm version](https://img.shields.io/npm/v/react-native-fast-image-auto-height.svg)](https://www.npmjs.com/package/react-native-fast-image-auto-height)
-[![license](https://img.shields.io/npm/l/react-native-fast-image-auto-height.svg)](./LICENSE)
+[![npm version](https://img.shields.io/npm/v/react-native-fast-image-auto-height)](https://www.npmjs.com/package/react-native-fast-image-auto-height)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/Chirag069/react-native-fast-image-auto-height/blob/main/LICENSE)
 
 ```diff
 - import FastImage from 'react-native-fast-image';
@@ -193,4 +193,4 @@ See [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 ## License
 
-[MIT](./LICENSE)
+[MIT](https://github.com/Chirag069/react-native-fast-image-auto-height/blob/main/LICENSE)

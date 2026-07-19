@@ -5,7 +5,7 @@ Thanks for helping make this the definitive FastImage successor. Contributions o
 ## Development setup
 
 ```sh
-git clone https://github.com/chiragramani/react-native-fast-image-auto-height.git
+git clone https://github.com/Chirag069/react-native-fast-image-auto-height.git
 cd react-native-fast-image-auto-height
 npm install
 ```

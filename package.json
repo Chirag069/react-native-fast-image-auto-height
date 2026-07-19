@@ -1,6 +1,6 @@
 {
   "name": "react-native-fast-image-auto-height",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The definitive FastImage successor for React Native: FastImage performance and API compatibility plus automatic height/width calculation, aspect-ratio caching, promise deduplication, retries, placeholders and fade transitions. New Architecture (Fabric + TurboModules) ready.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -68,14 +68,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/chiragramani/react-native-fast-image-auto-height.git"
+    "url": "git+https://github.com/Chirag069/react-native-fast-image-auto-height.git"
   },
   "author": "codingturtle",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/chiragramani/react-native-fast-image-auto-height/issues"
+    "url": "https://github.com/Chirag069/react-native-fast-image-auto-height/issues"
   },
-  "homepage": "https://github.com/chiragramani/react-native-fast-image-auto-height#readme",
+  "homepage": "https://github.com/Chirag069/react-native-fast-image-auto-height#readme",
   "peerDependencies": {
     "react": "*",
     "react-native": "*",

@@ -92,4 +92,4 @@ jest.mock('react-native-fast-image', () => {
 
 ## Still stuck?
 
-Open an issue with a minimal reproduction: https://github.com/chiragramani/react-native-fast-image-auto-height/issues
+Open an issue with a minimal reproduction: https://github.com/Chirag069/react-native-fast-image-auto-height/issues
