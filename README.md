@@ -4,7 +4,6 @@
 
 [![npm version](https://img.shields.io/npm/v/react-native-fast-image-auto-height.svg)](https://www.npmjs.com/package/react-native-fast-image-auto-height)
 [![license](https://img.shields.io/npm/l/react-native-fast-image-auto-height.svg)](./LICENSE)
-[![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue.svg)](./tsconfig.json)
 
 ```diff
 - import FastImage from 'react-native-fast-image';
@@ -22,14 +21,12 @@
 | ⚡ | **Native performance** | Glide (Android) + SDWebImage (iOS) via [`react-native-fast-image`](https://github.com/DylanVann/react-native-fast-image) |
 | 🧠 | **Aspect-ratio cache** | In-memory LRU — each URL is measured once per session |
 | 🔁 | **Request deduplication** | Many cells, one `Image.getSize` probe |
-| 📱 | **Android-safe sizing** | Loads only after a ratio is known; auto-size defaults to `contain` (no cover-zoom) |
 | 🦴 | **Placeholder** | Any React node, remote source, or `require(...)` while loading |
 | ✨ | **Fade transition** | `transitionDuration` on the native animation driver |
 | 🔄 | **Retries** | `retryCount` / `retryDelay` for flaky CDNs |
 | 💤 | **Lazy load** | Defer until the JS thread is idle |
 | 📜 | **List-ready** | FlatList / FlashList / masonry — `prefetchSize` for zero layout jumps |
 | 🧩 | **Hooks + config** | `useImageDimensions`, `useAutoHeight`, `useAutoWidth`, `FastImageConfigProvider` |
-| 🔒 | **Strict TypeScript** | Every public type exported |
 
 ### Compared to alternatives
 
@@ -40,7 +37,6 @@
 | Auto width | ❌ | ❌ | ✅ |
 | Ratio cache + dedup | ❌ | ⚠️ | ✅ |
 | Placeholder / fade / retry / lazy | ❌ | ❌ | ✅ |
-| Typed public API | ⚠️ | ⚠️ | ✅ |
 
 ---
 
@@ -52,15 +48,14 @@ Other libraries solve **one** half of the problem. This package is the only one 
 | --- | --- | --- |
 | **`react-native-fast-image` alone** | Fast native caching, priorities, headers | Auto height/width — you hardcode sizes or fight layout jumps in feeds |
 | **`react-native-auto-height-image` alone** | Auto height from aspect ratio | Glide/SDWebImage — uses RN `Image`, slower cache, no FastImage API |
-| **Rolling your own** | Custom hacks around `Image.getSize` | Dedup, LRU ratio cache, Android Glide race fixes, retries, placeholders, typed API |
+| **Rolling your own** | Custom hacks around `Image.getSize` | Dedup, LRU ratio cache, retries, placeholders |
 
 **What only this package does together:**
 
 1. **One import migration** — keep every FastImage prop/event/static; add `autoHeight` when you need it.
 2. **Jump-free lists** — `estimatedAspectRatio` + `prefetchSize` + in-memory LRU so FlatList/FlashList cells mount at final height.
-3. **Android done right** — ignore bad FastImage `onLoad` sizes, size from `Image.getSize`, don’t load until the box exists (no cover-zoom).
-4. **One probe per URL** — 100 cells asking for the same image share a single size request.
-5. **UX extras on the same component** — placeholder, fade, retries, lazy — without wrapping FastImage yourself.
+3. **One probe per URL** — 100 cells asking for the same image share a single size request.
+4. **UX extras on the same component** — placeholder, fade, retries, lazy — without wrapping FastImage yourself.
 
 Use it when you want **FastImage performance** and **auto-sized layouts** without stitching two libraries (or custom sizing code) together.
 
@@ -173,7 +168,6 @@ const height = useAutoHeight({ enabled: true, width: 300, aspectRatio });
 - Classic mode → `resizeMode="cover"`
 - `autoHeight` / `autoWidth` → `resizeMode="contain"` (override with `cover` if you want crop)
 - Size cache → **memory LRU only** (no disk)
-- Android → sizes from `Image.getSize` (not FastImage `onLoad`)
 
 Full reference: [docs/API.md](./docs/API.md)
 

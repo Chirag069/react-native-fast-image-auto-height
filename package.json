@@ -70,7 +70,7 @@
     "type": "git",
     "url": "git+https://github.com/chiragramani/react-native-fast-image-auto-height.git"
   },
-  "author": "Chirag Ramani",
+  "author": "codingturtle",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/chiragramani/react-native-fast-image-auto-height/issues"
