@@ -181,7 +181,7 @@ describe('FastImage', () => {
       );
     });
 
-    it('measures flex/percentage widths via onLayout', async () => {
+    it('uses Yoga aspectRatio for percentage widths', async () => {
       getSize.mockImplementation((_uri, onSuccess) => {
         (onSuccess as SuccessCb)(200, 100);
       });
@@ -195,12 +195,46 @@ describe('FastImage', () => {
         />
       );
 
-      await fireEvent(getByTestId('img'), 'layout', {
-        nativeEvent: { layout: { x: 0, y: 0, width: 350, height: 0 } },
-      });
       await waitFor(() =>
-        expect(flatten(getByTestId('img').props.style).height).toBe(175)
+        expect(flatten(getByTestId('img').props.style).aspectRatio).toBe(2)
       );
+    });
+
+    it('defaults autoHeight images to resizeMode contain', async () => {
+      getSize.mockImplementation((_uri, onSuccess) => {
+        (onSuccess as SuccessCb)(400, 200);
+      });
+
+      const { getByTestId } = await render(
+        <FastImage
+          testID="img"
+          source={{ uri: 'https://a.com/contain.jpg' }}
+          style={{ width: 200 }}
+          autoHeight
+        />
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('img').props.resizeMode).toBe('contain')
+      );
+    });
+
+    it('does not load the native image until a ratio is known', async () => {
+      getSize.mockImplementation(() => {
+        // Probe never answers and no estimate — must not load yet.
+      });
+
+      const { getByTestId } = await render(
+        <FastImage
+          testID="img"
+          source={{ uri: 'https://a.com/pending.jpg' }}
+          style={{ width: 200 }}
+          autoHeight
+        />
+      );
+
+      // Mock maps undefined source → `{ uri: undefined }`; real RN gets no URI.
+      expect(getByTestId('img').props.source?.uri).toBeUndefined();
     });
 
     it('never overrides an explicit style height', async () => {

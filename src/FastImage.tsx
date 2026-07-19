@@ -1,6 +1,6 @@
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import type {
   ImageStyle,
   LayoutChangeEvent,
@@ -26,9 +26,8 @@ import { Placeholder } from './components/Placeholder';
 import { FadeView } from './components/FadeView';
 import { extractImageDecorationStyle } from './helpers/splitStyles';
 
-interface MeasuredSize {
-  width?: number;
-  height?: number;
+function isUsableRatio(ratio: number | null | undefined): ratio is number {
+  return ratio !== null && ratio !== undefined && Number.isFinite(ratio) && ratio > 0;
 }
 
 function FastImageComponent(props: FastImageProps): ReactNode {
@@ -98,57 +97,73 @@ function FastImageComponent(props: FastImageProps): ReactNode {
     onSizeResolved,
   });
 
-  // Percentage/flex dimensions are measured once via onLayout; the
-  // estimatedAspectRatio masks the single measurement frame.
-  const needsWidthMeasurement = autoHeightEnabled && styleWidth === undefined;
-  const needsHeightMeasurement = autoWidthEnabled && styleHeight === undefined;
-  const [measured, setMeasured] = useState<MeasuredSize>({});
+  const activeRatio = isUsableRatio(aspectRatio)
+    ? aspectRatio
+    : isUsableRatio(estimatedAspectRatio)
+      ? estimatedAspectRatio
+      : undefined;
+
+  // Auto-sized images must have a known box before the native engine loads.
+  // On Android, Glide center-crops to the *current* view bounds; loading into
+  // a height-less (or wrong-height) view permanently looks zoomed even after
+  // the correct height is applied later.
+  const sizingReady =
+    (!autoHeightEnabled && !autoWidthEnabled) || activeRatio !== undefined;
+
   const handleLayout = useCallback(
     (event: LayoutChangeEvent) => {
       onLayout?.(event);
-      if (!needsWidthMeasurement && !needsHeightMeasurement) {
-        return;
-      }
-      const { width, height } = event.nativeEvent.layout;
-      setMeasured((prev) => {
-        const nextWidth = needsWidthMeasurement && width > 0 ? width : prev.width;
-        const nextHeight =
-          needsHeightMeasurement && height > 0 ? height : prev.height;
-        if (nextWidth === prev.width && nextHeight === prev.height) {
-          return prev;
-        }
-        return { width: nextWidth, height: nextHeight };
-      });
     },
-    [onLayout, needsWidthMeasurement, needsHeightMeasurement]
+    [onLayout]
   );
 
   const computedHeight = useAutoHeight({
-    enabled: autoHeightEnabled,
-    width: styleWidth ?? measured.width,
+    enabled: autoHeightEnabled && styleWidth !== undefined,
+    width: styleWidth,
     aspectRatio,
     estimatedAspectRatio,
   });
   const computedWidth = useAutoWidth({
-    enabled: autoWidthEnabled,
-    height: styleHeight ?? measured.height,
+    enabled: autoWidthEnabled && styleHeight !== undefined,
+    height: styleHeight,
     aspectRatio,
     estimatedAspectRatio,
   });
 
   const composedStyle = useMemo<StyleProp<ImageStyle>>(() => {
-    if (computedHeight === undefined && computedWidth === undefined) {
+    if (!autoHeightEnabled && !autoWidthEnabled) {
       return style;
     }
-    const autoSize: ImageStyle = {};
-    if (computedHeight !== undefined) {
-      autoSize.height = computedHeight;
+    if (activeRatio === undefined) {
+      return style;
     }
-    if (computedWidth !== undefined) {
-      autoSize.width = computedWidth;
+
+    const autoSize: ImageStyle = {};
+    if (autoHeightEnabled) {
+      // Numeric width → explicit height (definite bounds for Glide/SDWebImage).
+      // Percentage/flex width → Yoga aspectRatio (no onLayout required).
+      if (computedHeight !== undefined) {
+        autoSize.height = computedHeight;
+      } else {
+        autoSize.aspectRatio = activeRatio;
+      }
+    }
+    if (autoWidthEnabled) {
+      if (computedWidth !== undefined) {
+        autoSize.width = computedWidth;
+      } else {
+        autoSize.aspectRatio = activeRatio;
+      }
     }
     return [style, autoSize];
-  }, [style, computedHeight, computedWidth]);
+  }, [
+    style,
+    autoHeightEnabled,
+    autoWidthEnabled,
+    activeRatio,
+    computedHeight,
+    computedWidth,
+  ]);
 
   // Harvest intrinsic dimensions from the load we already paid for.
   const handleLoad = useCallback(
@@ -175,11 +190,25 @@ function FastImageComponent(props: FastImageProps): ReactNode {
   const hasPlaceholder = placeholder !== undefined && placeholder !== null;
   const needsContainer = hasPlaceholder || transitionDuration > 0;
 
+  // Auto-sized boxes are meant to show the full image. Default to contain so
+  // a slightly-wrong ratio letterboxes instead of cover-zooming (especially
+  // visible on Android). Callers can still pass cover explicitly.
+  const effectiveResizeMode =
+    resizeModeProp ??
+    (autoHeightEnabled || autoWidthEnabled ? 'contain' : undefined);
+
+  // Remount when the settled ratio changes so Android Glide does not keep a
+  // bitmap center-cropped to the previous (wrong / zero) bounds.
+  const nativeKey =
+    Platform.OS === 'android' && (autoHeightEnabled || autoWidthEnabled)
+      ? `${attempt}-${activeRatio ?? 'pending'}`
+      : String(attempt);
+
   const imageProps = {
     ...accessibilityProps,
-    source: shouldLoad ? source : undefined,
+    source: shouldLoad && sizingReady ? source : undefined,
     defaultSource,
-    resizeMode: resizeModeProp,
+    resizeMode: effectiveResizeMode,
     fallback,
     tintColor,
     blurRadius,
@@ -197,7 +226,7 @@ function FastImageComponent(props: FastImageProps): ReactNode {
     return (
       <InternalFastImage
         {...imageProps}
-        key={attempt}
+        key={nativeKey}
         style={composedStyle}
         onLayout={handleLayout}
       >
@@ -217,7 +246,7 @@ function FastImageComponent(props: FastImageProps): ReactNode {
       {showPlaceholder ? (
         <Placeholder
           placeholder={placeholder}
-          resizeMode={resizeModeProp}
+          resizeMode={effectiveResizeMode}
           style={[StyleSheet.absoluteFill, decorationStyle]}
           testID={testID !== undefined ? `${testID}-placeholder` : undefined}
         />
@@ -229,7 +258,7 @@ function FastImageComponent(props: FastImageProps): ReactNode {
       >
         <InternalFastImage
           {...imageProps}
-          key={attempt}
+          key={nativeKey}
           style={[StyleSheet.absoluteFill, decorationStyle]}
         />
       </FadeView>

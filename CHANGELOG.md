@@ -9,6 +9,7 @@ adheres to [Semantic Versioning](https://semver.org/).
 ### Fixed
 
 - Android auto-height looking zoomed/cropped: ignore FastImage `onLoad` width/height on Android (they often report view/layout size) and size from `Image.getSize` instead, so the aspect-ratio cache is not poisoned.
+- Android Glide race: do not load auto-sized images until a ratio is known; size with explicit height or Yoga `aspectRatio`; remount when the ratio settles; default `autoHeight` / `autoWidth` to `resizeMode="contain"` so slight ratio errors do not cover-zoom.
 
 ## [1.0.0] - 2026-07-19
 

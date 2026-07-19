@@ -28,16 +28,19 @@ Checklist:
 
 `Image.getSize` uses React Native's image pipeline, which has a separate cache from Glide/SDWebImage. This can cause an extra fetch the *first* time a URL is probed before it renders. Once any image with that URL renders (or the probe completes), the ratio is cached and no further probes happen that session. If your API already returns image dimensions, pass `estimatedAspectRatio` with the exact value — the probe result then only confirms it.
 
-## Android: image looks zoomed / height is wrong (iOS looks fine)
+## Android: some images look zoomed, others look fine (iOS all fine)
 
-Usually the aspect-ratio cache was poisoned by FastImage's Android `onLoad` event, which often reports **view/layout size** instead of intrinsic image size. This library ignores those Android `onLoad` dimensions and sizes from `Image.getSize` instead.
+Two separate causes — both are handled by recent versions of this library:
 
-If you still see a wrong height after upgrading:
+1. **Auto-height race (Glide)** — Android loads/center-crops into a view before its height is known. Fix: we defer the native load until a ratio is known, size with explicit height or Yoga `aspectRatio`, remount when the ratio settles, and default `autoHeight` / `autoWidth` to `resizeMode="contain"` (so a slight ratio error letterboxes instead of zooming). Pass `resizeMode="cover"` only if you want cropping.
+2. **Poisoned size cache** — FastImage's Android `onLoad` often reports view size. We ignore it and size from `Image.getSize`.
 
-1. Call `FastImage.clearSizeCache()` once (or restart the app) so any previously poisoned entry is dropped.
-2. Prefer React Native >= 0.86 — `Image.getSize` then returns true source dimensions (and EXIF-aware rotation) instead of Fresco's downsampled bitmap size.
-3. Set `estimatedAspectRatio` to the real ratio while the probe runs to avoid a jump.
-4. If you were forcing `resizeMode="cover"` with a wrong height, the crop looks like a zoom; correct height makes `cover` fill the box without cropping the subject.
+If you still see zoom after upgrading:
+
+1. Call `FastImage.clearSizeCache()` once (or restart the app).
+2. For `autoHeight` banners, set `estimatedAspectRatio` so the box is correct before the probe finishes.
+3. Prefer React Native >= 0.86 for correct `Image.getSize` / EXIF handling.
+4. **Fixed-size grid cards** (category tiles, product tiles) that do **not** use `autoHeight` still use FastImage's default `cover`. Mismatched image vs cell aspect ratio will crop — that is expected. Use `resizeMode="contain"` (or match the cell ratio) if you need the full image visible on every tile.
 
 ## Wrong dimensions for rotated (EXIF) JPEGs on Android
 
