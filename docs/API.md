@@ -4,6 +4,8 @@
 
 The default export. Renders exactly one native FastImage when no new prop is used; adds a light container only when `placeholder` or `transitionDuration` require it.
 
+Native engine: peer dependency [`react-native-fast-image`](https://github.com/DylanVann/react-native-fast-image) (>= 8.6.0).
+
 ### FastImage-compatible props (frozen, never renamed)
 
 | Prop | Type | Description |
@@ -14,17 +16,17 @@ The default export. Renders exactly one native FastImage when no new prop is use
 | `source.priority` | `'low' \| 'normal' \| 'high'` | Native download priority (`FastImage.priority.*`) |
 | `source.cache` | `'immutable' \| 'web' \| 'cacheOnly'` | Native cache mode (`FastImage.cacheControl.*`) |
 | `defaultSource` | `number` | Local asset shown while loading |
-| `resizeMode` | `'contain' \| 'cover' \| 'stretch' \| 'center'` | Default `'cover'` (`FastImage.resizeMode.*`) |
+| `resizeMode` | `'contain' \| 'cover' \| 'stretch' \| 'center'` | Classic mode default `'cover'`. With `autoHeight` / `autoWidth`, defaults to `'contain'` unless set explicitly. |
 | `fallback` | `boolean` | Fall back to the plain RN `Image` implementation |
 | `tintColor` | `ColorValue` | Tints all non-transparent pixels |
 | `blurRadius` | `number` | Blur filter radius |
-| `transition` | `'fade' \| 'none'` | Native display transition (`FastImage.transition.*`) |
+| `transition` | `'fade' \| 'none'` | Native display transition (`FastImage.transition.*`), passed through when the engine supports it |
 | `style` | `StyleProp<ImageStyle>` | Supports `borderRadius` |
 | `testID` | `string` | Test identifier |
 | `children` | `ReactNode` | Rendered over the image |
 | `onLoadStart` | `() => void` | Load started |
 | `onProgress` | `(e: OnProgressEvent) => void` | Download progress |
-| `onLoad` | `(e: OnLoadEvent) => void` | Loaded, with intrinsic `width`/`height` |
+| `onLoad` | `(e: OnLoadEvent) => void` | Loaded, with `nativeEvent.width` / `height` (intrinsic on iOS; often view-sized on Android — not used for auto-sizing there) |
 | `onError` | `() => void` | Load failed (after all retries) |
 | `onLoadEnd` | `() => void` | Load finished (success or failure) |
 | `onLayout` | `(e: LayoutChangeEvent) => void` | Standard layout callback |
@@ -33,9 +35,9 @@ The default export. Renders exactly one native FastImage when no new prop is use
 
 | Prop | Type | Default | Description |
 | --- | --- | --- | --- |
-| `autoHeight` | `boolean` | `false` | Compute height from the rendered width and the intrinsic aspect ratio. Requires a width: numeric `style.width`, or flex/percentage width (measured once via layout). Mutually exclusive with `autoWidth`. |
+| `autoHeight` | `boolean` | `false` | Compute height from the rendered width and the intrinsic aspect ratio. Requires a width: numeric `style.width`, or percentage/flex width (Yoga `aspectRatio`). Mutually exclusive with `autoWidth`. |
 | `autoWidth` | `boolean` | `false` | Compute width from the rendered height and the intrinsic aspect ratio. |
-| `estimatedAspectRatio` | `number` | — | Provisional `width / height` used for layout before the intrinsic size is known. Prevents layout jumps. |
+| `estimatedAspectRatio` | `number` | — | Provisional `width / height` used for layout before the intrinsic size is known. Recommended for every auto-sized image — also allows the native image to load before the probe finishes. |
 | `onSizeResolved` | `(size: ResolvedImageSize) => void` | — | Fired exactly once per source when the intrinsic size is known. `fromCache` tells you whether it was synchronous. |
 | `placeholder` | `ReactNode \| Source \| number` | — | Rendered while loading: any node (skeleton/shimmer) or an image source (blurred thumb, local asset). |
 | `transitionDuration` | `number` | `0` | JS-driven fade-in on load, in ms. `0` disables it (classic behavior). Runs on the native animation driver. |
@@ -47,8 +49,11 @@ The default export. Renders exactly one native FastImage when no new prop is use
 
 1. `autoHeight` + `autoWidth` together throws in development — one dimension must anchor the other.
 2. An explicit `style.height` next to `autoHeight` **wins**; the library warns in development and does nothing.
-3. Resolution priority: **cache hit** (synchronous) → `estimatedAspectRatio` (provisional) → first of **`onLoad` dimensions** / **size probe** → cached in the LRU for the session.
+3. Resolution priority: **cache hit** (synchronous) → **`estimatedAspectRatio`** (provisional) → **`Image.getSize` probe** → on **iOS only**, FastImage **`onLoad` dimensions**. Results are cached in the LRU for the session.
 4. Local assets (`require(...)`) resolve synchronously — never a probe, never a layout jump.
+5. Numeric width → explicit pixel `height`. Percentage/flex width → Yoga `aspectRatio` style.
+6. The native image does **not** load until a usable ratio is known (estimate, cache, or probe). This prevents Android Glide from center-cropping into a height-less view.
+7. With auto-sizing, `resizeMode` defaults to `'contain'`. Pass `'cover'` explicitly if you want cropping.
 
 ## Statics
 
@@ -94,6 +99,8 @@ const { dimensions, aspectRatio, status, fromCache, reportDimensions } =
 ```
 
 Cache-first, deduplicated, retried, stale-guarded (safe for recycled list cells) and unmount-safe.
+
+`reportDimensions` feeds sizes from elsewhere (e.g. FastImage `onLoad`). On Android, `ImageSizeService` ignores those reports because they are often view/layout size, not intrinsic size.
 
 ### `useAutoHeight({ enabled, width, aspectRatio, estimatedAspectRatio? })`
 

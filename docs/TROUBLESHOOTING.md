@@ -9,14 +9,20 @@ npm install react-native-fast-image
 cd ios && pod install
 ```
 
+If npm reports a React peer conflict (common with React 19), use `--legacy-peer-deps` or set `legacy-peer-deps=true` in `.npmrc`. See [INSTALLATION.md](./INSTALLATION.md).
+
 ## Images render but never get a height with `autoHeight`
 
 Checklist:
 
-1. **Is there a width?** `autoHeight` derives height from width. Provide a numeric `style.width`, a percentage, or a flex width. With no width at all there is nothing to derive from.
+1. **Is there a width?** `autoHeight` derives height from width. Provide a numeric `style.width`, a percentage, or a flex width.
 2. **Is an explicit `style.height` set?** User styles win; remove the fixed height (the library warns about this in dev).
 3. **Is the size probe failing?** Watch `onSizeResolved` / use `useImageDimensions` directly and check `status`. Auth-protected URLs need `source.headers` so `Image.getSizeWithHeaders` can probe them.
-4. **Set `estimatedAspectRatio`** so layout is sane even while resolution is pending or failed.
+4. **Set `estimatedAspectRatio`** so layout (and the native load) can proceed before the probe finishes.
+
+## Auto-sized image stays blank / loads late
+
+The native image waits until a ratio is known. Without `estimatedAspectRatio` or a cache/prefetch hit, Android/iOS wait for `Image.getSize`. Fix: pass `estimatedAspectRatio`, or call `FastImage.prefetchSize()` while data loads.
 
 ## Layout jumps in lists
 
@@ -30,9 +36,9 @@ Checklist:
 
 ## Android: some images look zoomed, others look fine (iOS all fine)
 
-Two separate causes — both are handled by recent versions of this library:
+Two separate causes — both are handled by this library for **auto-sized** images:
 
-1. **Auto-height race (Glide)** — Android loads/center-crops into a view before its height is known. Fix: we defer the native load until a ratio is known, size with explicit height or Yoga `aspectRatio`, remount when the ratio settles, and default `autoHeight` / `autoWidth` to `resizeMode="contain"` (so a slight ratio error letterboxes instead of zooming). Pass `resizeMode="cover"` only if you want cropping.
+1. **Auto-height race (Glide)** — Android was loading/center-cropping into a view before its height was known. Fix: defer the native load until a ratio is known; size with explicit height or Yoga `aspectRatio`; remount when the ratio settles; default `autoHeight` / `autoWidth` to `resizeMode="contain"`. Pass `resizeMode="cover"` only if you want cropping.
 2. **Poisoned size cache** — FastImage's Android `onLoad` often reports view size. We ignore it and size from `Image.getSize`.
 
 If you still see zoom after upgrading:

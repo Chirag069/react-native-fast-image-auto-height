@@ -7,10 +7,9 @@ import { MemoryCache } from './MemoryCache';
  * intrinsic dimensions the ratio was derived from so cache hits can report
  * full `ResolvedImageSize` payloads.
  *
- * This is the version-1 cache: deliberately memory-only, because a persisted
- * ratio for a URL whose image was replaced server-side (common on merchant
- * CDNs) would produce wrong layouts forever. Persistent backends implement
- * `SizeCacheStorage` and plug in through `CacheManager.setStorage()`.
+ * Memory-only on purpose: a persisted ratio for a URL whose image was
+ * replaced server-side (common on merchant CDNs) would produce wrong
+ * layouts forever.
  */
 export class AspectRatioCache {
   private readonly cache: MemoryCache<string, CachedImageSize>;

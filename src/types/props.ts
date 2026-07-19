@@ -25,7 +25,11 @@ export interface FastImageProps extends AccessibilityProps {
   source?: FastImageSource;
   /** Local asset shown while the remote image loads. */
   defaultSource?: number;
-  /** How the image is resized to fit its container. Defaults to `'cover'`. */
+  /**
+   * How the image is resized to fit its container.
+   * Classic mode defaults to `'cover'`. With {@link autoHeight} /
+   * {@link autoWidth}, defaults to `'contain'` unless set explicitly.
+   */
   resizeMode?: ResizeMode;
   /** If `true`, falls back to the plain React Native `Image` implementation. */
   fallback?: boolean;
@@ -63,8 +67,9 @@ export interface FastImageProps extends AccessibilityProps {
   /**
    * Automatically compute the image height from its rendered width and its
    * intrinsic aspect ratio. Requires a width (numeric `style.width`, or a
-   * flex/percentage width measured via layout). Mutually exclusive with
-   * {@link autoWidth}.
+   * flex/percentage width via Yoga `aspectRatio`). Mutually exclusive with
+   * {@link autoWidth}. Prefer {@link estimatedAspectRatio} so the native
+   * image can load before the size probe finishes.
    */
   autoHeight?: boolean;
   /**
@@ -102,8 +107,7 @@ export interface FastImageProps extends AccessibilityProps {
   retryDelay?: number;
   /**
    * Defers the image load until the JS thread is idle
-   * (`requestIdleCallback`). Viewport-based visibility detection will
-   * extend this prop in a future minor version.
+   * (`requestIdleCallback`, with a macrotask fallback).
    */
   lazy?: boolean;
 }

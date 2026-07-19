@@ -9,6 +9,7 @@
 - ✅ **Drop-in FastImage replacement** — migration is one import line
 - ✅ **Auto height / auto width** from the image's intrinsic aspect ratio
 - ✅ **FastImage performance** — Glide (Android) / SDWebImage (iOS) via [`react-native-fast-image`](https://github.com/DylanVann/react-native-fast-image)
+- ✅ **Android-safe auto-sizing** — defers native load until a ratio is known; defaults `autoHeight` / `autoWidth` to `contain`
 - ✅ **New Architecture ready** — Fabric + TurboModules (subject to engine support)
 - ✅ **In-memory aspect-ratio cache** with LRU eviction — a URL is measured once per session
 - ✅ **Promise deduplication** — 100 cells asking for the same image trigger exactly one size probe
@@ -44,6 +45,8 @@ cd ios && pod install
 ```
 
 Requires React Native >= 0.71. Works on the New Architecture and the legacy renderer (subject to engine support).
+
+> **Note:** `react-native-fast-image@8.6.x` peers React 17/18 only. If your app uses React 19, install with `legacy-peer-deps` (this repo ships an `.npmrc` for that).
 
 ## Migration from FastImage
 
@@ -81,14 +84,23 @@ import FastImage from 'react-native-fast-image-auto-height';
   source={{ uri: 'https://example.com/photo.jpg' }}
   style={{ width: '100%' }}
   autoHeight
-  estimatedAspectRatio={4 / 3} // provisional layout before the size is known
+  estimatedAspectRatio={4 / 3} // provisional layout before the size is known (recommended)
   onSizeResolved={({ width, height, aspectRatio, fromCache }) => {
     console.log(`intrinsic size ${width}x${height}`);
   }}
 />
 ```
 
-The intrinsic size comes from (in priority order): the in-memory aspect-ratio cache, the image's own `onLoad` event, or a deduplicated `Image.getSize` probe. Once resolved, every future render of that URL is synchronous.
+Size resolution order:
+
+1. In-memory aspect-ratio cache (synchronous)
+2. `estimatedAspectRatio` (provisional layout; also lets the native image load)
+3. `Image.getSize` / `Image.getSizeWithHeaders` (deduplicated probe) — **source of truth on Android**
+4. FastImage `onLoad` dimensions — **iOS only** (Android `onLoad` often reports view size and is ignored)
+
+Numeric `style.width` → explicit pixel height. Percentage/flex width → Yoga `aspectRatio`. Once resolved, every future render of that URL is synchronous.
+
+With `autoHeight` / `autoWidth`, `resizeMode` defaults to `contain` (pass `cover` explicitly if you want cropping).
 
 ### Automatic width
 
@@ -107,6 +119,7 @@ The intrinsic size comes from (in priority order): the in-memory aspect-ratio ca
   source={{ uri: 'https://example.com/photo.jpg' }}
   style={{ width: '100%' }}
   autoHeight
+  estimatedAspectRatio={4 / 3}
   placeholder={<Skeleton />}         // any node, or an image source
   transitionDuration={200}           // fade-in on load (ms)
   retryCount={3}                     // retry failed loads
@@ -125,7 +138,12 @@ await Promise.all(items.map((item) => FastImage.prefetchSize({ uri: item.imageUr
 <FlashList
   data={items}
   renderItem={({ item }) => (
-    <FastImage source={{ uri: item.imageUrl }} style={{ width: '100%' }} autoHeight />
+    <FastImage
+      source={{ uri: item.imageUrl }}
+      style={{ width: '100%' }}
+      autoHeight
+      estimatedAspectRatio={4 / 3}
+    />
   )}
 />;
 ```
@@ -157,13 +175,15 @@ All FastImage props plus:
 | --- | --- | --- | --- |
 | `autoHeight` | `boolean` | `false` | Compute height from width × intrinsic aspect ratio |
 | `autoWidth` | `boolean` | `false` | Compute width from height × intrinsic aspect ratio |
-| `estimatedAspectRatio` | `number` | — | Provisional `width / height` before resolution |
+| `estimatedAspectRatio` | `number` | — | Provisional `width / height` before resolution (recommended for auto-size) |
 | `onSizeResolved` | `(size) => void` | — | Fired once when the intrinsic size is known |
 | `placeholder` | `ReactNode \| Source \| number` | — | Shown while loading |
 | `transitionDuration` | `number` | `0` | Fade-in duration in ms (`0` = off, classic behavior) |
 | `retryCount` | `number` | `0` | Load retries (`0` = classic behavior) |
 | `retryDelay` | `number` | `250` | Delay between retries in ms |
 | `lazy` | `boolean` | `false` | Defer load until the JS thread is idle |
+
+`resizeMode` defaults to `'cover'` in classic mode, and to `'contain'` when `autoHeight` / `autoWidth` is enabled (unless you pass it explicitly).
 
 New statics: `FastImage.prefetchSize(source)`, `FastImage.clearSizeCache()`.
 
@@ -181,9 +201,10 @@ Full reference: [docs/API.md](./docs/API.md).
 
 ## Design decisions worth knowing
 
-- **Memory-only size cache (v1).** A persisted aspect ratio for a URL whose image was replaced server-side (common on merchant CDNs) would produce wrong layouts forever. Persistent backends (MMKV, AsyncStorage) will arrive as opt-in plugins through the `SizeCacheStorage` interface — the architecture is already pluggable.
-- **One native seam.** Exactly one file imports the native engine. If the ecosystem moves, this library moves with a one-file change.
+- **Memory-only size cache.** Aspect ratios live in an in-memory LRU only (no disk). Persisting them would break layouts when a CDN replaces an image behind the same URL.
+- **One native seam.** Exactly one file imports `react-native-fast-image`. If the ecosystem moves, this library moves with a one-file change.
 - **User styles always win.** `autoHeight` never overrides an explicit `style.height`.
+- **Android sizes from `Image.getSize`.** FastImage's Android `onLoad` dimensions are ignored (they often report view size). Auto-sized images do not load until a ratio is known.
 
 ## Contributing
 

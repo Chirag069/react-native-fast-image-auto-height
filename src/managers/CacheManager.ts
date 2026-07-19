@@ -4,14 +4,8 @@ import type { SizeCacheStorage } from '../types/cache';
 import type { CachedImageSize, ImageDimensions } from '../types/dimensions';
 
 /**
- * Facade over the cache layer. Owns the in-memory aspect-ratio LRU, the
- * pending-request deduplication map, and the optional pluggable persistent
- * storage.
- *
- * Version 1 reads exclusively from memory (see AspectRatioCache for why);
- * an installed {@link SizeCacheStorage} receives write-through updates so
- * persistence plugins (MMKV, AsyncStorage) can be layered on without a
- * public API change.
+ * Facade over the cache layer. Owns the in-memory aspect-ratio LRU and the
+ * pending-request deduplication map. Reads are always from memory.
  */
 export class CacheManager {
   private readonly sizes: AspectRatioCache;

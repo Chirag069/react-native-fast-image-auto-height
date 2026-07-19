@@ -14,15 +14,23 @@ This library's own code is pure TypeScript and renderer-agnostic. New Architectu
 
 ### How is the height calculated before the image loads?
 
-In priority order: the in-memory ratio cache (synchronous), your `estimatedAspectRatio` (provisional), then the first of the image's `onLoad` dimensions or a deduplicated `Image.getSize` probe. See [ARCHITECTURE.md](./ARCHITECTURE.md).
+In priority order: the in-memory ratio cache (synchronous), your `estimatedAspectRatio` (provisional), then a deduplicated `Image.getSize` probe. On iOS, FastImage `onLoad` dimensions can also settle the size. On Android, `onLoad` dimensions are ignored (unreliable). See [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ### Why is the size cache not persisted to disk?
 
-Because a URL's image can change server-side (merchant CDNs do this constantly), and a stale persisted ratio would silently break layouts. Persistence will ship as an opt-in plugin (`SizeCacheStorage`) for apps with immutable URLs.
+It is **memory-only** (LRU, cleared on app restart). A URL's image can change server-side (merchant CDNs do this constantly), and a stale persisted ratio would silently break layouts.
 
 ### Does `autoHeight` work with `width: '100%'` or flex widths?
 
-Yes — the width is measured once via `onLayout` (a single frame, masked by `estimatedAspectRatio` or a `placeholder`), then the height is derived from it.
+Yes — Yoga `aspectRatio` is applied once a ratio is known (`estimatedAspectRatio`, cache, or probe). No `onLayout` measurement is required for percentage/flex widths.
+
+### Why does my auto-sized image not load until later?
+
+The native image is intentionally deferred until a usable ratio exists. Pass `estimatedAspectRatio` (or call `FastImage.prefetchSize`) so the image can load immediately with a correct box — especially important on Android.
+
+### Why do `autoHeight` images default to `resizeMode="contain"`?
+
+Auto-sized boxes are meant to show the full image. `contain` letterboxes if the ratio is slightly wrong; `cover` would look zoomed/cropped. Classic mode (no auto-size) still defaults to `'cover'`. Pass `resizeMode="cover"` explicitly if you want cropping.
 
 ### Can I use both `autoHeight` and `autoWidth`?
 
@@ -40,9 +48,9 @@ With `retryCount` set, it retries with `retryDelay` between attempts. If everyth
 
 Yes, exactly once per source per mount — synchronously-cached resolutions report `fromCache: true`.
 
-### Does `lazy` detect viewport visibility?
+### What does `lazy` do?
 
-Not yet. In v1 `lazy` defers loading until the JS thread is idle. Viewport-based visibility detection is planned and will extend the same prop without breaking it.
+It defers loading until the JS thread is idle (`requestIdleCallback`, with a macrotask fallback). It does not detect viewport visibility.
 
 ### GIF, WebP, AVIF, SVG?
 
@@ -51,3 +59,7 @@ Format support comes from the engine: GIF, WebP and AVIF work as in `react-nativ
 ### Can I build my own component on this infrastructure?
 
 Yes — `useImageDimensions`, `useAutoHeight` and `useAutoWidth` are public exports backed by the same cache and deduplication.
+
+### Why do some fixed grid tiles look zoomed on Android but fine on iOS?
+
+Fixed-size cards without `autoHeight` still use FastImage's default `cover`. Different source aspect ratios crop differently; platform decoders can also differ slightly. Use `resizeMode="contain"` (or match the cell ratio) for tiles that must show the full product. See [TROUBLESHOOTING.md](./TROUBLESHOOTING.md).

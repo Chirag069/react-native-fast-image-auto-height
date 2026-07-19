@@ -21,6 +21,8 @@ notes unless you prefer otherwise.
 ## Scope notes
 
 This library contains no native code and makes no network requests of its own
-beyond delegating image loading and size probes to React Native and
-`react-native-fast-image`. Reports about those layers should also be
-raised upstream with the respective projects.
+beyond delegating image loading to the peer dependency
+[`react-native-fast-image`](https://github.com/DylanVann/react-native-fast-image)
+(Glide / SDWebImage) and size probes to React Native's `Image.getSize` /
+`Image.getSizeWithHeaders`. Reports about those layers should also be raised
+upstream with the respective projects.

@@ -1,10 +1,10 @@
 /**
- * Pluggable cache contracts.
+ * Optional size-cache storage contract.
  *
- * Version 1 ships with an in-memory LRU only (a replaced image behind an
- * unchanged URL must never be served stale persisted dimensions). Persistent
- * backends (MMKV, AsyncStorage, ...) plug in through this interface via
- * `CacheManager.setStorage()` without any public API change.
+ * v1 reads and writes the aspect-ratio cache in memory only
+ * (`AspectRatioCache`). This interface describes the shape used by
+ * `CacheManager`'s internal write-through hook when a storage backend is
+ * installed.
  */
 export interface SizeCacheStorage {
   /** Returns the persisted aspect ratio for a cache key, if any. */
